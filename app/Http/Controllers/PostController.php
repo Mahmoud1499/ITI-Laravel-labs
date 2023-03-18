@@ -57,6 +57,8 @@ class PostController extends Controller
     public function store(Request $request)
     {
         //
+        // dd("store function");
+        return view('post.index', ['posts' => $this->allPosts]);
     }
 
     /**
@@ -97,7 +99,8 @@ class PostController extends Controller
     public function update(Request $request, string $id)
     {
         //
-
+        // dd("update function");
+        return view('post.index', ['posts' => $this->allPosts]);
     }
 
     /**

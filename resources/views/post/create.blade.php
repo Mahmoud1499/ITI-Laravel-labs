@@ -5,7 +5,8 @@
 @endsection
 
 @section('content')
-    <form class="mt-3" action="{{ route('posts.index') }}">
+    <form class="mt-3" action="{{ route('posts.store') }} " method="POST">
+        @csrf
         <div class="mb-3">
             <label for="postId" class="form-label">Post ID</label>
             <input type="text" class="form-control" id="postId" aria-describedby="emailHelp" name="postId">

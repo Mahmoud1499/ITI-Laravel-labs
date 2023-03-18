@@ -5,7 +5,10 @@
 @endsection
 {{-- {{ var_dump($post) }} --}}
 @section('content')
-    <form class="mt-3" action="{{ route('posts.index') }}">
+    @csrf
+    <form class="mt-3" action="{{ route('posts.update', $post['id']) }}" method="POST">
+        @csrf
+        @method('PUT')
         <div class="mb-3">
             <label for="postId" class="form-label">Post ID</label>
             <input type="text" class="form-control" id="postId" aria-describedby="emailHelp" name="postId"

@@ -9,6 +9,7 @@ class ShowPosts extends Component
 {
     public $user;
     public $foundPost;
+    protected $listeners = ['popUp' => 'popUpEvent'];
 
 
     public function render()
@@ -25,9 +26,10 @@ class ShowPosts extends Component
 
         $foundPost = Post::find($id);
 
-        $user = Post::find($foundPost['user_id'])->user;
-
-        return view('livewire.show-posts', ['post' => $foundPost, 'user' => $user]);
+        // $user = Post::find($foundPost['user_id'])->user;
+        // $this->emit('popUp');
+        return view('livewire.show-posts', ['post' => $foundPost]);
+        // , 'user' => $user
     }
 
 

@@ -1,4 +1,4 @@
-@extends('layouts.layout1')
+@extends('layouts.app')
 @section('title')
     Index
 @endsection
@@ -15,6 +15,9 @@
                 <th scope="col">#</th>
                 <th scope="col">Title</th>
                 <th scope="col">Posted By</th>
+                <th scope="col">Slug</th>
+                <th scope="col">Image Name</th>
+
                 <th scope="col">Created At</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -23,12 +26,18 @@
 
             @foreach ($posts as $post)
                 <tr>
+                    {{-- @dd($post->slug) --}}
+
                     <td>{{ $post['id'] }}</td>
                     <td>{{ $post['title'] }}</td>
                     <td>{{ $post->user->name }}</td>
                     {{-- <td>{{ $user['name'] }}</td> --}}
 
                     {{-- <td>{{ $post['created_at'] }}</td> --}}
+                    <td>{{ $post->slug }}</td>
+                    <td>{{ $post->img_name }}</td>
+
+
                     <td>{{ \Carbon\Carbon::parse($post['created_at'])->format('d-m-Y') }}
                     </td>
                     <td class="d-flex justify-content-around">
@@ -55,10 +64,11 @@
                             </form>
                         @endif --}}
 
-                        @livewire('show-posts')
-
+                        <button type="button" wire:click="popUP(9)" type="button" class="btn btn-primary d-inline"
+                            data-toggle="modal" data-target=".bd-example-modal-lg">Ajax</button>
                 </tr>
             @endforeach
+            @livewire('show-posts')
 
             </div>
 

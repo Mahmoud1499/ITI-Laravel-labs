@@ -1,11 +1,20 @@
-@extends('layouts.layout1')
+@extends('layouts.app')
 
 @section('title')
     Create
 @endsection
 
 @section('content')
-    <form class="mt-3" action="{{ route('posts.store') }} " method="POST">
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+    <form class="mt-3" action="{{ route('posts.store') }} " method="POST" enctype="multipart/form-data">
         @csrf
         {{-- <div class="mb-3">
             <label for="postId" class="form-label">Post ID</label>
@@ -24,10 +33,10 @@
                 @endforeach
             </select>
         </div>
-        {{-- <div class="mb-3">
-            <label for="postCreatedAt" class="form-label">post Created At</label>
-            <input type="text" class="form-control" id="postCreatedAt" name="postCreatedAt" disabled="disabled">
-        </div> --}}
+        <div class="mb-3">
+            <label for="avatar" class="form-label">post Img</label>
+            <input type="file" class="form-control" id="avatar" name="postFile">
+        </div>
         <div class="mb-3">
             <label for="postDescription" class="form-label">post Description</label>
             <textarea type="text" class="form-control" id="postDescription" name="postDescription"></textarea>

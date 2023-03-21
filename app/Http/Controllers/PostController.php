@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Nette\Utils\Image;
+use Illuminate\Http\File;
+
 
 
 class PostController extends Controller
@@ -39,7 +45,7 @@ class PostController extends Controller
     public function index()
     {
 
-        $allPosts = Post::paginate(10);
+        $allPosts = Post::latest()->paginate(10);
         $user = User::all();
 
         //return view
@@ -63,16 +69,46 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        // validate on the form data
+        $request->validate([
+            'postTitle' => ['required', 'min:3', 'unique:posts,title,except,id'],
+            'postDescription' => ['required', 'min:5'],
+            'postFile.*' =>  'mimes:jpeg,png,jpg,gif,svg',
+            'postFile' =>  'required',
+
+
+
+        ], [
+            'title.required' => 'my custom message',
+            'title.min' => 'minimum custom message',
+            'postFile' =>  'Post Image is require',
+
+        ]);
+
+        $user = User::find($request->postPostedBy);
+        // dd($users)
+        if (!$user) {
+            abort('403');
+        }
+        if ($request->postFile) {
+            // dd($request->all());
+            $image      = $request->file('postFile');
+            $fileName   = time() . '.' . $image->extension();
+            $image->storeAs('public/', $fileName);
+        }
+
         // dd($request);
         //get data from request
         $title = request()->postTitle;
         $description = request()->postDescription;
         $postCreator = request()->postPostedBy;
+        $slug = $title;
         //insert data in db
         Post::create([
             'title' => $title,
             'description' => $description,
-            'user_id' => $postCreator
+            'user_id' => $postCreator,
+            'img_name' => $fileName
         ]);
         // dd("store function");
         //redirect to index route
@@ -87,11 +123,11 @@ class PostController extends Controller
         //get one post
         $foundPost = Post::find($id);
         // if ($foundPost['user_id'])
-        $user = Post::find($foundPost['user_id'])->user;
-        $comments = $foundPost->comments;
-
+        // $user = Post::find($foundPost['user_id'])->user;
+        $user =   $comments = $foundPost->comments;
+        Post::with('user')->findOrFail($id);
         // dd($post);
-        return view('post.show', ['post' => $foundPost, 'user' => $user, "comments" => $comments]);
+        return view('post.show', ['post' => $foundPost, 'user' =>  $user, "comments" => $comments]);
     }
 
     /**
@@ -137,8 +173,14 @@ class PostController extends Controller
         // $post = Post::where('id', $id)->firstorfail()->update([
         //     'is_deleted' => '1'
         // ]);
-        $post = Post::find($id)->delete();
-
+        $post = Post::find($id);
+        // dd($post->img_name);
+        $post->delete();
+        $image_path = public_path('storage/' . $post->img_name);
+        if ($image_path) {
+            //File::delete($image_path);
+            unlink($image_path);
+        }
         // foreach ($this->allPosts as $post) {
         //     if ($post['id'] == $id) {
         //         $foundPost = $post;

@@ -1,9 +1,17 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CommentController;
 
+
+
+
+
+
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,3 +54,42 @@ Route::delete('/comments/{id}', [CommentController::class, "destroy"])->name("co
 
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+
+
+//Socialite GitHub
+
+Route::get('/auth/redirect', function () {
+    return Socialite::driver('github')->redirect();
+})->name('githubLogin');
+
+Route::get('/auth/callback', function () {
+
+    $githubUser = Socialite::driver('github')->stateless()->user();
+    // dd($githubUser);
+
+    $user = User::updateOrCreate([
+        'github_id' => $githubUser->id,
+        'password' => 'githubApi',
+
+    ], [
+        'name' => $githubUser->name,
+        'email' => $githubUser->email,
+        'github_token' => $githubUser->token,
+        'github_refresh_token' => $githubUser->refreshToken,
+    ]);
+
+    Auth::login($user);
+    // to_route('posts.index');
+    // dd($user);
+    // $user->token
+});
+
+//Gmail
+Route::get('redirect/{driver}', [LoginController::class, "redirectToProvider"])
+    ->name('login.provider')
+    ->where('driver', implode('|', config('auth.socialite.drivers')));
+Route::get('{driver}/callback', [LoginController::class, "handleProviderCallback"])
+    ->name('login.callback')
+    ->where('driver', implode('|', config('auth.socialite.drivers')));

@@ -15,6 +15,11 @@
             <img src="/storage/{{ $post->img_name }}" alt=" Post img">
             <h5 class="card-title">Title: {{ $post['title'] }}</h5>
             <p class="card-text">Description: {{ $post['description'] }}</p>
+            <p class="mt-2">
+                Tags: @foreach ($post->tags as $tag)
+                    <span class="btn btn-outline-warning ">{{ $tag->name }}</span>
+                @endforeach
+            </p>
         </div>
     </div>
     <div class="card mt-3">
@@ -88,4 +93,8 @@
 
         </div>
     </div>
+
+
+    @livewire('add-comments', ['post' => $post])
+    @livewire('comments', ['post' => $post])
 @endsection

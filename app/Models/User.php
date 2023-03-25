@@ -23,6 +23,10 @@ class User extends Authenticatable
     {
         return $this->morphTo();
     }
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
     protected $fillable = [
         'name',
         'email',

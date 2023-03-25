@@ -38,6 +38,10 @@
             <input type="file" class="form-control" id="avatar" name="postFile">
         </div>
         <div class="mb-3">
+            <label for="tags" class="form-label">Tags</label>
+            <input type="test" class="form-control" name="tags" id="tags">
+        </div>
+        <div class="mb-3">
             <label for="postDescription" class="form-label">post Description</label>
             <textarea type="text" class="form-control" id="postDescription" name="postDescription"></textarea>
         </div>

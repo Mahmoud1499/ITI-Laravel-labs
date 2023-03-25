@@ -1,15 +1,18 @@
-<div>
-    <div class="card mt-3">
-        <div class="card-header">
-            add new comment
-        </div>
-        <div class="card-body">
-            @csrf
-            <div class="mb-3">
-                <label for="comment" class="form-label">Comment</label>
-                <textarea class="form-control" name="comment" id="comment" wire:model="comment"></textarea>
+<div class="card mt-3">
+    <div class="card-header">
+        Comments
+    </div>
+    <div class="card-body  ">
+        @foreach ($post->comments as $comment)
+            <div class="d-flex ">
+                <p>{{ $comment->comment }}</p>
+                {{-- <p>Comment by {{ $post->user->name }}</p> --}}
+                @method('delete')
+                <button class="btn btn-danger mx-5" wire:click="deleteComment( {{ $comment['id'] }})"
+                    onclick="return confirm('Are you sure?')">Delete</button>
+                <hr>
             </div>
-            <button type="button" wire:click="addComment" class="btn btn-primary">Update</button>
-        </div>
+        @endforeach
+
     </div>
 </div>

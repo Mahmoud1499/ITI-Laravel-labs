@@ -28,6 +28,8 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/posts/{id}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('/posts/{id}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{id}', [PostController::class, 'destroy'])->name('posts.destroy');
+    // ajax
+    Route::get('/posts/{id}/view', [PostController::class, 'view'])->name('posts.view');
     // restore
     Route::post('/posts/{post}/restore', [PostController::class, "restore"])->name("posts.restore");
 });
@@ -38,7 +40,9 @@ Route::post('/comments', [CommentController::class, "store"])->name("comments.st
 Route::delete('/comments/{id}', [CommentController::class, "destroy"])->name("comments.destroy");
 
 //liveWire
-Route::view('posts/popUp/${id}', 'livewire.show-posts')->name('posts.popUP');
+// Route::view('posts/${id}', 'livewire.comments')->name('comments');
+
+//User Profile
 
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

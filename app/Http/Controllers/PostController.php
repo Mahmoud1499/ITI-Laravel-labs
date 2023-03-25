@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Models\Post;
 use App\Models\User;
+use App\Rules\threePostsOnlyForOneUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -42,11 +43,16 @@ class PostController extends Controller
     //     ],
     // ];
 
-    public function index()
+    public function index(Request $request)
     {
-
-        $allPosts = Post::latest()->paginate(10);
+        $allPosts = Post::latest()->withTrashed()->paginate(10);
         $user = User::all();
+
+        if ($request->has('view_deleted')) {
+            // $allPosts = $allPosts->onlyTrashed();
+        }
+
+
 
         //return view
         return view('post.index', ['posts' => $allPosts], ['user' => $user]);
@@ -75,6 +81,7 @@ class PostController extends Controller
             'postDescription' => ['required', 'min:5'],
             'postFile.*' =>  'mimes:jpeg,png,jpg,gif,svg',
             'postFile' =>  'required',
+            'postPostedBy' => ['required', 'exists:users,id', new threePostsOnlyForOneUser()],
 
 
 
@@ -103,13 +110,17 @@ class PostController extends Controller
         $description = request()->postDescription;
         $postCreator = request()->postPostedBy;
         $slug = $title;
+        $tags = explode(",", $request->tags);
+
         //insert data in db
-        Post::create([
+        $post = Post::create([
             'title' => $title,
             'description' => $description,
             'user_id' => $postCreator,
-            'img_name' => $fileName
+            'img_name' => $fileName,
+            "tags" => $tags
         ]);
+        $post->syncTags($tags);
         // dd("store function");
         //redirect to index route
         return to_route('posts.index',);
@@ -164,6 +175,20 @@ class PostController extends Controller
         return to_route('posts.index',);
     }
 
+    public function view($id)
+    {
+        $post = Post::find($id);
+
+        return response()->json([
+            'title' => $post->title,
+            'description' => $post->description,
+            'createdAt' => $post->created_at,
+            'updatedAt' => $post->updated_at,
+            'slug' => $post->slug,
+            'username' => $post->user->name,
+            'useremail' => $post->user->email,
+        ]);
+    }
     /**
      * Remove the specified resource from storage.
      */
